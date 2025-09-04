@@ -1,23 +1,34 @@
 import streamlit as st
 
-# Example response from RAG
-rag_response = "The user can be contacted via [email] for further information."
+# Example RAG response
+rag_response = "The user can be contacted via [email] or call [phone] for more information."
 
-# Your placeholder mappings
+# Placeholder mappings
 data_mapping = {
     "[email]": "john.doe@example.com",
     "[phone]": "+1-202-555-0182"
 }
 
-# Split response into words
+# Display paragraph with inline clickable placeholders
 st.write("### RAG Response with Clickable Placeholders")
+
+# Build paragraph dynamically
+paragraph = []
 for word in rag_response.split():
-    clean_word = word.strip(".,")  # handle punctuation
+    clean_word = word.strip(".,")  # strip punctuation
     
-    # If it's a placeholder, make it clickable
     if clean_word in data_mapping:
-        if st.button(clean_word):  
-            st.success(f"{clean_word} → {data_mapping[clean_word]}")
+        # Render as button, keep inline using markdown + unsafe_html
+        if st.button(clean_word, key=clean_word):
+            st.session_state[clean_word] = data_mapping[clean_word]
+        
+        # If clicked, replace placeholder with actual value
+        if clean_word in st.session_state:
+            paragraph.append(f"**{st.session_state[clean_word]}**")
+        else:
+            paragraph.append(f"[{clean_word}]")
     else:
-        # Show normal text
-        st.write(word, end=" ")
+        paragraph.append(word)
+
+# Show final inline text
+st.markdown(" ".join(paragraph))

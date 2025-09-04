@@ -9,25 +9,10 @@ data_mapping = {
     "[phone]": "+1-202-555-0182"
 }
 
-# Replace placeholders with clickable HTML spans
-html_content = rag_response
+# Replace placeholders with real values
 for placeholder, value in data_mapping.items():
-    html_content = html_content.replace(
-        placeholder,
-        f'<span class="placeholder" onclick="this.innerText=\'{value}\'">{placeholder}</span>'
-    )
+    rag_response = rag_response.replace(placeholder, value)
 
-# Add styles for clickable placeholders
-st.markdown(
-    f"""
-    <style>
-    .placeholder {{
-        color: blue;
-        cursor: pointer;
-        text-decoration: underline;
-    }}
-    </style>
-    <p>{html_content}</p>
-    """,
-    unsafe_allow_html=True
-)
+# Display final response
+st.write("### Final Response")
+st.write(rag_response)

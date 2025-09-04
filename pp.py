@@ -9,26 +9,25 @@ data_mapping = {
     "[phone]": "+1-202-555-0182"
 }
 
-# Display paragraph with inline clickable placeholders
-st.write("### RAG Response with Clickable Placeholders")
+# Replace placeholders with clickable HTML spans
+html_content = rag_response
+for placeholder, value in data_mapping.items():
+    html_content = html_content.replace(
+        placeholder,
+        f'<span class="placeholder" onclick="this.innerText=\'{value}\'">{placeholder}</span>'
+    )
 
-# Build paragraph dynamically
-paragraph = []
-for word in rag_response.split():
-    clean_word = word.strip(".,")  # strip punctuation
-    
-    if clean_word in data_mapping:
-        # Render as button, keep inline using markdown + unsafe_html
-        if st.button(clean_word, key=clean_word):
-            st.session_state[clean_word] = data_mapping[clean_word]
-        
-        # If clicked, replace placeholder with actual value
-        if clean_word in st.session_state:
-            paragraph.append(f"**{st.session_state[clean_word]}**")
-        else:
-            paragraph.append(f"[{clean_word}]")
-    else:
-        paragraph.append(word)
-
-# Show final inline text
-st.markdown(" ".join(paragraph))
+# Add styles for clickable placeholders
+st.markdown(
+    f"""
+    <style>
+    .placeholder {{
+        color: blue;
+        cursor: pointer;
+        text-decoration: underline;
+    }}
+    </style>
+    <p>{html_content}</p>
+    """,
+    unsafe_allow_html=True
+)
